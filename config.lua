@@ -1,8 +1,12 @@
 Config = {}
 
+Config.Debug = false
+
 Config.FlameSize = 2.4
 
-Config.UseOx = true -- If using OxLib -- For more optimized detecting vehicle enter/exit
+Config.VersionCheck = true
+
+Config.Framework = 'qb' -- qb/esx/qbox
 Config.JobCheck = true
 Config.JobName = 'mechanic' -- Job name who will be able to install these mods
 Config.RemoveItem = true
@@ -13,21 +17,12 @@ Config.NativeChipGettingItem = 'mechacniko_laptop' -- Name of the item if Native
 Config.EnableChipRemoveing = true -- If you want to enable chip removing system
 -- These 3 will only matter if EnableChipRemoveing is true
 Config.RemoveOwnlyOwner = true -- Only owner can remove the program
-Config.ItemNameForRemove = 'domas_tool' -- Name of the item in the inventory
-Config.RemoveLicensePrefix = true -- Some frameworks remove "license:" before identifiers, so heres an option for that, also set to false if using QB
+Config.ItemNameForRemove = 'domas_tools' -- Name of the item in the inventory
+Config.RemoveLicensePrefix = false -- Some frameworks remove "license:" before identifiers, so heres an option for that, also set to false if using QB
 
 Config.PlayCustomSounds = true -- If using LondonStudios PlayCustomSounds (https://github.com/LondonStudios/PlayCustomSounds) so the sounds sounds better, if false interact-sound will be used
 
-Config.ShootFlamesButton = 21 -- Left Shift
-Config.DisablePopButton = true
-
-Config.AutoPopOnDownshift = true -- Config.DisablePopButton must be true
-Config.AutoAlwaysPop = false -- Config.AutoPopOnDownshift must be false Config.DisablePopButton must be true
-Config.AutoPopFrequency = 100
-
 Config.Database = 'oxmysql' -- oxmysql or mysql-async
-
-Config.Debug = false
 
 Config.HowFarSound = 50 -- How far from vehicle players will be able to hear the pops
 Config.Volume = 0.2 --Volume of the sound
@@ -42,16 +37,22 @@ Config.Type5Frequency = 5
 Config.Trigger = 'Domas_Flames'
 
 function Notify(text,type)
-    if Config.UseOx then
-        ESX.ShowNotification(text, type)
-    else
-        local QBCore = exports['qb-core']:GetCoreObject()
-        QBCore.Functions.Notify(text, type, 5000)
-    end
+    lib.notify({
+        title = 'Domas Vehicle Flames',
+        description = text,
+        type = 'info'
+    })
 end
 
 Config.InstallingFunction = true -- You can edit it at client/utils.lua
-Config.InstallingFunctionTime = 5000 -- Wait in ms before, triggering server-side events
+Config.InstallingFunctionTime = 5000
+
+Config.ShootFlamesButton = 21 -- Left Shift
+Config.DisablePopButton = true
+
+Config.AutoPopOnDownshift = true -- Config.DisablePopButton must be true
+Config.AutoAlwaysPop = false -- Config.AutoPopOnDownshift must be false Config.DisablePopButton must be true
+Config.AutoPopFrequency = 100
 
 Config.Text = {
     ['not_mechanic'] = "You are not a mechanic",
@@ -61,7 +62,7 @@ Config.Text = {
     ['mech_laptop'] = "Mechanic Laptop",
     ['progralvl'] = "Program Level",
     ['engine'] = "Engine",
-    ['example_text_laptop'] = "Engine name (pvz.:f40v8, f50v12, murciev12",
+    ['example_text_laptop'] = "Variklio pavadinimas (pvz.:f40v8, f50v12, murciev12",
     ['no_ship_for_engine'] = "The is no chip for engine: ",
     ['cancelled_search'] = "Search cancelled",
     ['installing'] = "Installing program",
@@ -74,7 +75,6 @@ Config.Text = {
     ['you_dont_own'] = 'This is not your vehicle',
     ['no_program'] = 'This vehicle does not have any program installed',
     ['removed_program'] = 'You removed program successfuly',
-    ['searching'] = 'Searching...',
 }
 
 Config.Flames = {
@@ -82,13 +82,17 @@ Config.Flames = {
         label = 'Level 1 Tuning for Avesv engine', -- Label
         item = 'domas_avesv_1', -- How item called in your inventory
         type = 1, -- 1, 2 or 3 the higher the value the faster it will shoot flames
-        sound = 'Avesv', -- Sound name from interact-sound
+        sound = 'Avesv', -- Sound name from interact-sound,
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     Avesv2 = {
         label = 'Level 2 Tuning for Avesv engine',
         item = 'domas_avesv_2',
         type = 2,
         sound = 'Avesv',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     Avesv3 = {
@@ -96,6 +100,8 @@ Config.Flames = {
         item = 'domas_avesv_3',
         type = 3,
         sound = 'Avesv',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     Avesv4 = {
@@ -103,6 +109,8 @@ Config.Flames = {
         item = 'domas_avesv_4',
         type = 4,
         sound = 'Avesv',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     Avesv5 = {
@@ -110,6 +118,8 @@ Config.Flames = {
         item = 'domas_avesv_5',
         type = 5,
         sound = 'Avesv',
+        minRPM = 0.0, -- Example how to make stationary pops
+        maxRPM = 1.0,
     },
 
     -- Brabus850
@@ -119,12 +129,16 @@ Config.Flames = {
         item = 'domas_brabus850_1',
         type = 1,
         sound = 'brabus850',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     brabus8502 = {
         label = 'Level 2 Tuning for brabus850 engine',
         item = 'domas_brabus850_2',
         type = 2,
         sound = 'brabus850',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     brabus8503 = {
@@ -132,6 +146,8 @@ Config.Flames = {
         item = 'domas_brabus850_3',
         type = 3,
         sound = 'brabus850',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     brabus8504 = {
@@ -139,6 +155,8 @@ Config.Flames = {
         item = 'domas_brabus850_4',
         type = 4,
         sound = 'brabus850',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     brabus8505 = {
@@ -146,6 +164,8 @@ Config.Flames = {
         item = 'domas_brabus850_5',
         type = 5,
         sound = 'brabus850',
+        minRPM = 0.1,
+        maxRPM = 0.9,
     },
 
     -- diablov12
@@ -155,12 +175,16 @@ Config.Flames = {
         item = 'domas_diablov12_1',
         type = 1,
         sound = 'diablov12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     diablov122 = {
         label = 'Level 2 Tuning for diablov12 engine',
         item = 'domas_diablov12_2',
         type = 2,
         sound = 'diablov12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     diablov123 = {
@@ -168,6 +192,8 @@ Config.Flames = {
         item = 'domas_diablov12_3',
         type = 3,
         sound = 'diablov12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     diablov124 = {
@@ -175,6 +201,8 @@ Config.Flames = {
         item = 'domas_diablov12_4',
         type = 4,
         sound = 'diablov12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     diablov125 = {
@@ -182,6 +210,8 @@ Config.Flames = {
         item = 'domas_diablov12_5',
         type = 5,
         sound = 'diablov12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
         -- f40v8
@@ -191,12 +221,16 @@ Config.Flames = {
         item = 'domas_f40v8_1',
         type = 1,
         sound = 'f40v8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     f40v82 = {
         label = 'Level 2 Tuning for f40v8 engine',
         item = 'domas_f40v8_2',
         type = 2,
         sound = 'f40v8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     f40v83 = {
@@ -204,6 +238,8 @@ Config.Flames = {
         item = 'domas_f40v8_3',
         type = 3,
         sound = 'f40v8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     f40v84 = {
@@ -211,6 +247,8 @@ Config.Flames = {
         item = 'domas_f40v8_4',
         type = 4,
         sound = 'f40v8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     f40v85 = {
@@ -218,6 +256,8 @@ Config.Flames = {
         item = 'domas_f40v8_5',
         type = 5,
         sound = 'f40v8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     -- f50v12
@@ -227,12 +267,16 @@ Config.Flames = {
         item = 'domas_f50v12_1',
         type = 1,
         sound = 'f50v12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     f50v122 = {
         label = 'Level 2 Tuning for f50v12 engine',
         item = 'domas_f50v12_2',
         type = 2,
         sound = 'f50v12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     f50v123 = {
@@ -240,6 +284,8 @@ Config.Flames = {
         item = 'domas_f50v12_3',
         type = 3,
         sound = 'f50v12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     f50v124 = {
@@ -247,6 +293,8 @@ Config.Flames = {
         item = 'domas_f50v12_4',
         type = 4,
         sound = 'f50v12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     f50v125 = {
@@ -254,6 +302,8 @@ Config.Flames = {
         item = 'domas_f50v12_5',
         type = 5,
         sound = 'f50v12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
 
@@ -264,12 +314,16 @@ Config.Flames = {
         item = 'domas_ferrarif12_1',
         type = 1,
         sound = 'ferrarif12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     ferrarif122 = {
         label = 'Level 2 Tuning for ferrarif12 engine',
         item = 'domas_ferrarif12_2',
         type = 2,
         sound = 'ferrarif12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     ferrarif123 = {
@@ -277,6 +331,8 @@ Config.Flames = {
         item = 'domas_ferrarif12_3',
         type = 3,
         sound = 'ferrarif12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     ferrarif124 = {
@@ -284,6 +340,8 @@ Config.Flames = {
         item = 'domas_ferrarif12_4',
         type = 4,
         sound = 'ferrarif12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     ferrarif125 = {
@@ -291,6 +349,8 @@ Config.Flames = {
         item = 'domas_ferrarif12_5',
         type = 5,
         sound = 'ferrarif12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
 
@@ -301,12 +361,16 @@ Config.Flames = {
         item = 'domas_gt3flat6_1',
         type = 1,
         sound = 'gt3flat6',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     gt3flat62 = {
         label = 'Level 2 Tuning for gt3flat6 engine',
         item = 'domas_gt3flat6_2',
         type = 2,
         sound = 'gt3flat6',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     gt3flat63 = {
@@ -314,6 +378,8 @@ Config.Flames = {
         item = 'domas_gt3flat6_3',
         type = 3,
         sound = 'gt3flat6',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     gt3flat64 = {
@@ -321,6 +387,8 @@ Config.Flames = {
         item = 'domas_gt3flat6_4',
         type = 4,
         sound = 'gt3flat6',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     gt3flat65 = {
@@ -328,6 +396,8 @@ Config.Flames = {
         item = 'domas_gt3flat6_5',
         type = 5,
         sound = 'gt3flat6',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     -- lambov10
@@ -337,12 +407,16 @@ Config.Flames = {
         item = 'domas_lambov10_1',
         type = 1,
         sound = 'lambov10',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     lambov102 = {
         label = 'Level 2 Tuning for lambov10 engine',
         item = 'domas_lambov10_2',
         type = 2,
         sound = 'lambov10',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     lambov103 = {
@@ -350,6 +424,8 @@ Config.Flames = {
         item = 'domas_lambov10_3',
         type = 3,
         sound = 'lambov10',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     lambov104 = {
@@ -357,6 +433,8 @@ Config.Flames = {
         item = 'domas_lambov10_4',
         type = 4,
         sound = 'lambov10',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     lambov105 = {
@@ -364,6 +442,8 @@ Config.Flames = {
         item = 'domas_lambov10_5',
         type = 5,
         sound = 'lambov10',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     -- murciev12
@@ -373,12 +453,16 @@ Config.Flames = {
         item = 'domas_murciev12_1',
         type = 1,
         sound = 'murciev12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     murciev122 = {
         label = 'Level 2 Tuning for murciev12 engine',
         item = 'domas_murciev12_2',
         type = 2,
         sound = 'murciev12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     murciev123 = {
@@ -386,6 +470,8 @@ Config.Flames = {
         item = 'domas_murciev12_3',
         type = 3,
         sound = 'murciev12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     murciev124 = {
@@ -393,6 +479,8 @@ Config.Flames = {
         item = 'domas_murciev12_4',
         type = 4,
         sound = 'murciev12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     murciev125 = {
@@ -400,6 +488,8 @@ Config.Flames = {
         item = 'domas_murciev12_5',
         type = 5,
         sound = 'murciev12',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     -- musv8
@@ -409,12 +499,16 @@ Config.Flames = {
         item = 'domas_musv8_1',
         type = 1,
         sound = 'musv8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     musv82 = {
         label = 'Level 2 Tuning for musv8 engine',
         item = 'domas_musv8_2',
         type = 2,
         sound = 'musv8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     musv83 = {
@@ -422,6 +516,8 @@ Config.Flames = {
         item = 'domas_musv8_3',
         type = 3,
         sound = 'musv8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     musv84 = {
@@ -429,6 +525,8 @@ Config.Flames = {
         item = 'domas_musv8_4',
         type = 4,
         sound = 'musv8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     musv85 = {
@@ -436,6 +534,8 @@ Config.Flames = {
         item = 'domas_musv8_5',
         type = 5,
         sound = 'musv8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     -- predatorv8
@@ -445,12 +545,16 @@ Config.Flames = {
         item = 'domas_predatorv8_1',
         type = 1,
         sound = 'predatorv8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     predatorv82 = {
         label = 'Level 2 Tuning for predatorv8 engine',
         item = 'domas_predatorv8_2',
         type = 2,
         sound = 'predatorv8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     predatorv83 = {
@@ -458,6 +562,8 @@ Config.Flames = {
         item = 'domas_predatorv8_3',
         type = 3,
         sound = 'predatorv8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     predatorv84 = {
@@ -465,6 +571,8 @@ Config.Flames = {
         item = 'domas_predatorv8_4',
         type = 4,
         sound = 'predatorv8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     predatorv85 = {
@@ -472,6 +580,8 @@ Config.Flames = {
         item = 'domas_predatorv8_5',
         type = 5,
         sound = 'predatorv8',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     -- rb26dett
@@ -481,12 +591,16 @@ Config.Flames = {
         item = 'domas_rb26dett_1',
         type = 1,
         sound = 'rb26dett',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     rb26dett2 = {
         label = 'Level 2 Tuning for rb26dett engine',
         item = 'domas_rb26dett_2',
         type = 2,
         sound = 'rb26dett',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     rb26dett3 = {
@@ -494,6 +608,8 @@ Config.Flames = {
         item = 'domas_rb26dett_3',
         type = 3,
         sound = 'rb26dett',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     rb26dett4 = {
@@ -501,6 +617,8 @@ Config.Flames = {
         item = 'domas_rb26dett_4',
         type = 4,
         sound = 'rb26dett',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     rb26dett5 = {
@@ -508,6 +626,8 @@ Config.Flames = {
         item = 'domas_rb26dett_5',
         type = 5,
         sound = 'rb26dett',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     -- rotary7
@@ -517,12 +637,16 @@ Config.Flames = {
         item = 'domas_rotary7_1',
         type = 1,
         sound = 'rotary7',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     rotary72 = {
         label = 'Level 2 Tuning for rotary7 engine',
         item = 'domas_rotary7_2',
         type = 2,
         sound = 'rotary7',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     rotary73 = {
@@ -530,6 +654,8 @@ Config.Flames = {
         item = 'domas_rotary7_3',
         type = 3,
         sound = 'rotary7',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     rotary74 = {
@@ -537,6 +663,8 @@ Config.Flames = {
         item = 'domas_rotary7_4',
         type = 4,
         sound = 'rotary7',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     rotary75 = {
@@ -544,6 +672,8 @@ Config.Flames = {
         item = 'domas_rotary7_5',
         type = 5,
         sound = 'rotary7',
+        minRPM = 0.0,
+        maxRPM = 1.0,
     },
 
     -- sestov10
@@ -553,12 +683,16 @@ Config.Flames = {
         item = 'domas_sestov10_1',
         type = 1,
         sound = 'sestov10',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
     sestov102 = {
         label = 'Level 2 Tuning for sestov10 engine',
         item = 'domas_sestov10_2',
         type = 2,
         sound = 'sestov10',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     sestov103 = {
@@ -566,6 +700,8 @@ Config.Flames = {
         item = 'domas_sestov10_3',
         type = 3,
         sound = 'sestov10',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     sestov104 = {
@@ -573,6 +709,8 @@ Config.Flames = {
         item = 'domas_sestov10_4',
         type = 4,
         sound = 'sestov10',
+        minRPM = 0.3,
+        maxRPM = 0.5,
     },
 
     sestov105 = {
@@ -580,7 +718,7 @@ Config.Flames = {
         item = 'domas_sestov10_5',
         type = 5,
         sound = 'sestov10',
+        minRPM = 0.0,
+        maxRPM = 1.0,
     },
-
 }
-
