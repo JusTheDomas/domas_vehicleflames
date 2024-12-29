@@ -19,6 +19,11 @@ Config.RemoveLicensePrefix = true -- Some frameworks remove "license:" before id
 Config.PlayCustomSounds = true -- If using LondonStudios PlayCustomSounds (https://github.com/LondonStudios/PlayCustomSounds) so the sounds sounds better, if false interact-sound will be used
 
 Config.ShootFlamesButton = 21 -- Left Shift
+Config.DisablePopButton = true
+
+Config.AutoPopOnDownshift = true -- Config.DisablePopButton must be true
+Config.AutoAlwaysPop = false -- Config.AutoPopOnDownshift must be false Config.DisablePopButton must be true
+Config.AutoPopFrequency = 100
 
 Config.Database = 'oxmysql' -- oxmysql or mysql-async
 
